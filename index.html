@@ -415,9 +415,33 @@
       color: var(--danger);
     }
     
+    .filter-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+      padding: 15px;
+      background: var(--light-gray);
+      border-radius: 8px;
+    }
+    
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .filter-group label {
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    
     @media (max-width: 992px) {
       .form-grid {
         grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .filter-container {
+        grid-template-columns: 1fr;
       }
     }
     
@@ -445,6 +469,11 @@
       
       .monthly-summary {
         grid-template-columns: 1fr;
+      }
+      
+      .month-selector {
+        flex-direction: column;
+        align-items: flex-start;
       }
     }
   </style>
@@ -481,10 +510,10 @@
       <div class="stats-container">
         <div class="stat-card">
           <div class="stat-title">
-            <i>RS</i>
+            <i class="fas fa-chart-line"></i>
             Total Sales
           </div>
-          <div class="stat-value" id="total-sales">0</div>
+          <div class="stat-value" id="total-sales">RS 0</div>
           <div class="stat-icon sales-icon">
             <i class="fas fa-chart-line"></i>
           </div>
@@ -492,10 +521,10 @@
         
         <div class="stat-card">
           <div class="stat-title">
-            <i class="fas fa-mon-bill-wave"></i>
+            <i class="fas fa-trending-up"></i>
             Total Profit
           </div>
-          <div class="stat-value stat-positive" id="total-profit">0</div>
+          <div class="stat-value stat-positive" id="total-profit">RS 0</div>
           <div class="stat-icon profit-icon">
             <i class="fas fa-trending-up"></i>
           </div>
@@ -503,7 +532,7 @@
         
         <div class="stat-card">
           <div class="stat-title">
-            <i class="fas fa-receipt"></i>
+            <i class="fas fa-shopping-bag"></i>
             Total Orders
           </div>
           <div class="stat-value" id="total-orders">0</div>
@@ -514,12 +543,34 @@
         
         <div class="stat-card">
           <div class="stat-title">
-            <i class="fas fa-shield-alt"></i>
+            <i class="fas fa-percent"></i>
             Avg. Profit Margin
           </div>
           <div class="stat-value stat-positive" id="avg-margin">0%</div>
           <div class="stat-icon expense-icon">
             <i class="fas fa-percent"></i>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-title">
+            <i class="fas fa-truck"></i>
+            Total Delivery Expense
+          </div>
+          <div class="stat-value" id="total-delivery">RS 0</div>
+          <div class="stat-icon expense-icon">
+            <i class="fas fa-truck"></i>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-title">
+            <i class="fas fa-receipt"></i>
+            Total Order Expense
+          </div>
+          <div class="stat-value" id="total-order-expense">RS 0</div>
+          <div class="stat-icon expense-icon">
+            <i class="fas fa-receipt"></i>
           </div>
         </div>
       </div>
@@ -562,6 +613,11 @@
           </div>
           
           <div class="form-group">
+            <label for="deliveryExpense">Delivery Expense (RS)</label>
+            <input type="number" id="deliveryExpense" class="form-control" placeholder="0.00" step="0.01">
+          </div>
+          
+          <div class="form-group">
             <label for="orderDate">Order Date</label>
             <input type="date" id="orderDate" class="form-control" value="">
           </div>
@@ -574,62 +630,64 @@
           </button>
         </div>
       </div>
-<div class="card">
-  <h2 class="card-title">
-    <i class="fas fa-list-alt"></i>
-    Order List
-  </h2>
+      
+      <div class="card">
+        <h2 class="card-title">
+          <i class="fas fa-list-alt"></i>
+          Order List
+        </h2>
 
-  <div class="filter-container">
-  <div class="filter-group">
-    <label for="filterOrderId">Filter by Order ID</label>
-    <input type="text" id="filterOrderId" class="form-control" placeholder="Enter Order ID" oninput="filterOrders()">
-  </div>
-  
-  <div class="filter-group">
-    <label for="filterDate">Filter by Date</label>
-    <input type="date" id="filterDate" class="form-control" onchange="filterOrders()">
-  </div>
-  
-  <div class="filter-group">
-    <label style="opacity: 0;">Reset</label>
-    <button onclick="resetFilters()" class="btn btn-primary btn-sm">
-      <i class="fas fa-sync"></i>
-      Reset Filters
-    </button>
-  </div>
-  
-  <div class="filter-group">
-    <label style="opacity: 0;">Download</label>
-    <button onclick="downloadCSV()" class="btn btn-success btn-sm">
-      <i class="fas fa-download"></i>
-      Download CSV
-    </button>
-  </div>
-</div>
+        <div class="filter-container">
+          <div class="filter-group">
+            <label for="filterOrderId">Filter by Order ID</label>
+            <input type="text" id="filterOrderId" class="form-control" placeholder="Enter Order ID" oninput="filterOrders()">
+          </div>
+          
+          <div class="filter-group">
+            <label for="filterDate">Filter by Date</label>
+            <input type="date" id="filterDate" class="form-control" onchange="filterOrders()">
+          </div>
+          
+          <div class="filter-group">
+            <label style="opacity: 0;">Reset</label>
+            <button onclick="resetFilters()" class="btn btn-primary btn-sm">
+              <i class="fas fa-sync"></i>
+              Reset Filters
+            </button>
+          </div>
+          
+          <div class="filter-group">
+            <label style="opacity: 0;">Download</label>
+            <button onclick="downloadCSV()" class="btn btn-success btn-sm">
+              <i class="fas fa-download"></i>
+              Download CSV
+            </button>
+          </div>
+        </div>
 
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Customer <i class="fas fa-sort"></i></th>
-          <th>Order ID <i class="fas fa-sort"></i></th>
-          <th>Reference <i class="fas fa-sort"></i></th>
-          <th>Cost <i class="fas fa-sort"></i></th>
-          <th>Sale <i class="fas fa-sort"></i></th>
-          <th>Expense <i class="fas fa-sort"></i></th>
-          <th>Profit <i class="fas fa-sort"></i></th>
-          <th>Date <i class="fas fa-sort"></i></th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="ordersTable">
-        <!-- Data will be inserted here -->
-      </tbody>
-    </table>
-  </div>
-</div>
-
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Customer <i class="fas fa-sort"></i></th>
+                <th>Order ID <i class="fas fa-sort"></i></th>
+                <th>Reference <i class="fas fa-sort"></i></th>
+                <th>Cost <i class="fas fa-sort"></i></th>
+                <th>Sale <i class="fas fa-sort"></i></th>
+                <th>Order Expense <i class="fas fa-sort"></i></th>
+                <th>Delivery Expense <i class="fas fa-sort"></i></th>
+                <th>Profit <i class="fas fa-sort"></i></th>
+                <th>Date <i class="fas fa-sort"></i></th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTable">
+              <!-- Data will be inserted here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
     <!-- Monthly Costs Section -->
     <div id="monthly-section" class="content-section">
@@ -654,6 +712,7 @@
               <option value="Salaries">Salaries</option>
               <option value="Marketing">Marketing</option>
               <option value="Supplies">Supplies</option>
+              <option value="Delivery">Delivery</option>
               <option value="Other">Other</option>
             </select>
           </div>
@@ -738,27 +797,32 @@
         <div class="monthly-summary">
           <div class="summary-card">
             <div class="summary-title">Total Revenue</div>
-            <div class="summary-value" id="report-revenue">RS0</div>
+            <div class="summary-value" id="report-revenue">RS 0</div>
           </div>
           
           <div class="summary-card">
             <div class="summary-title">Total Costs</div>
-            <div class="summary-value" id="report-costs">RS0</div>
+            <div class="summary-value" id="report-costs">RS 0</div>
           </div>
           
           <div class="summary-card">
-            <div class="summary-title">Total Expenses</div>
-            <div class="summary-value" id="report-expenses">RS0</div>
+            <div class="summary-title">Total Order Expenses</div>
+            <div class="summary-value" id="report-expenses">RS 0</div>
+          </div>
+          
+          <div class="summary-card">
+            <div class="summary-title">Total Delivery Expenses</div>
+            <div class="summary-value" id="report-delivery-expenses">RS 0</div>
           </div>
           
           <div class="summary-card">
             <div class="summary-title">Total Monthly Costs</div>
-            <div class="summary-value" id="report-monthly-costs">RS0  </div>
+            <div class="summary-value" id="report-monthly-costs">RS 0</div>
           </div>
           
           <div class="summary-card">
             <div class="summary-title">Net Profit/Loss</div>
-            <div class="summary-value" id="report-profit">RS0</div>
+            <div class="summary-value" id="report-profit">RS 0</div>
           </div>
         </div>
         
@@ -776,6 +840,7 @@
                   <th>Monthly Costs</th>
                   <th>Order Costs</th>
                   <th>Order Expenses</th>
+                  <th>Delivery Expenses</th>
                   <th>Net Amount</th>
                 </tr>
               </thead>
@@ -788,26 +853,44 @@
       </div>
     </div>
   </div>
-<div id="editModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
-background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
-  <div style="background:#fff; padding:20px; border-radius:10px; width:400px; position:relative;">
-    <h5>Edit Order</h5>
-    <input type="hidden" id="editId">
-    <div class="mb-2"><input type="text" id="editCustomer" class="form-control" placeholder="Customer Name"></div>
-    <div class="mb-2"><input type="text" id="editOrderIdField" class="form-control" placeholder="Order ID"></div>
-    <div class="mb-2"><input type="text" id="editReference" class="form-control" placeholder="Reference"></div>
-    <div class="mb-2"><input type="number" id="editCost" class="form-control" placeholder="Cost Price"></div>
-    <div class="mb-2"><input type="number" id="editSale" class="form-control" placeholder="Sale Price"></div>
-    <div class="mb-2"><input type="number" id="editExpense" class="form-control" placeholder="Order Expense"></div>
-    <div class="mb-2"><input type="date" id="editDate" class="form-control"></div>
-    <div style="text-align:right; margin-top:10px;">
-      <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
-      <button class="btn btn-success" onclick="updateOrder()">Save</button>
+  
+  <div id="editModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
+  background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index: 1000;">
+    <div style="background:#fff; padding:20px; border-radius:10px; width:400px; max-width: 90%; position:relative;">
+      <h5 style="margin-bottom: 15px; font-size: 18px;">Edit Order</h5>
+      <input type="hidden" id="editId">
+      <div class="form-group">
+        <input type="text" id="editCustomer" class="form-control" placeholder="Customer Name">
+      </div>
+      <div class="form-group">
+        <input type="text" id="editOrderIdField" class="form-control" placeholder="Order ID">
+      </div>
+      <div class="form-group">
+        <input type="text" id="editReference" class="form-control" placeholder="Reference">
+      </div>
+      <div class="form-group">
+        <input type="number" id="editCost" class="form-control" placeholder="Cost Price">
+      </div>
+      <div class="form-group">
+        <input type="number" id="editSale" class="form-control" placeholder="Sale Price">
+      </div>
+      <div class="form-group">
+        <input type="number" id="editExpense" class="form-control" placeholder="Order Expense">
+      </div>
+      <div class="form-group">
+        <input type="number" id="editDeliveryExpense" class="form-control" placeholder="Delivery Expense">
+      </div>
+      <div class="form-group">
+        <input type="date" id="editDate" class="form-control">
+      </div>
+      <div style="text-align:right; margin-top:10px;">
+        <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+        <button class="btn btn-success" onclick="updateOrder()">Save</button>
+      </div>
     </div>
   </div>
-</div>
 
- <script>
+  <script>
     // Supabase initialization
     const supabaseUrl = "https://tvqzkqyqkighoscozkqo.supabase.co";
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2cXprcXlxa2lnaG9zY296a3FvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQxMTkzMzgsImV4cCI6MjA2OTY5NTMzOH0.3DYpuZmV3-FNXdRXU_pmL8xSIivq0mYc4XipmDtC0es";
@@ -824,6 +907,14 @@ background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
     document.getElementById('viewMonth').value = currentMonth;
     document.getElementById('reportMonth').value = currentMonth;
     document.getElementById('orderDate').value = currentDate;
+    
+    // Format currency function
+    function formatCurrency(amount) {
+      return 'RS ' + parseFloat(amount).toLocaleString('en-IN', {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 2
+      });
+    }
     
     // Tab navigation
     document.querySelectorAll('.tab, .nav-link').forEach(item => {
@@ -859,6 +950,7 @@ background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
       let cost = parseFloat(document.getElementById("costPrice").value) || 0;
       let sale = parseFloat(document.getElementById("salePrice").value) || 0;
       let expense = parseFloat(document.getElementById("orderExpense").value) || 0;
+      let delivery_expense = parseFloat(document.getElementById("deliveryExpense").value) || 0;
       let order_date = document.getElementById("orderDate").value;
 
       // Validate inputs
@@ -868,7 +960,16 @@ background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
       }
 
       const { data, error } = await client.from("orders").insert([
-        { customer_name: customer, order_id, reference, cost_price: cost, sale_price: sale, order_expense: expense, order_date }
+        { 
+          customer_name: customer, 
+          order_id, 
+          reference, 
+          cost_price: cost, 
+          sale_price: sale, 
+          order_expense: expense, 
+          delivery_expense: delivery_expense,
+          order_date 
+        }
       ]);
 
       if (error) {
@@ -881,6 +982,7 @@ background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
         document.getElementById("costPrice").value = "";
         document.getElementById("salePrice").value = "";
         document.getElementById("orderExpense").value = "";
+        document.getElementById("deliveryExpense").value = "";
         document.getElementById("orderDate").value = currentDate;
         
         renderOrdersTable();
@@ -898,73 +1000,75 @@ background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
     }
 
     function openEditModal(order) {
-  document.getElementById('editId').value = order.id;
-  document.getElementById('editCustomer').value = order.customer_name || '';
-  document.getElementById('editOrderIdField').value = order.order_id || '';
-  document.getElementById('editReference').value = order.reference || '';
-  document.getElementById('editCost').value = order.cost_price || 0;
-  document.getElementById('editSale').value = order.sale_price || 0;
-  document.getElementById('editExpense').value = order.order_expense || 0;
-  document.getElementById('editDate').value = order.order_date || '';
+      document.getElementById('editId').value = order.id;
+      document.getElementById('editCustomer').value = order.customer_name || '';
+      document.getElementById('editOrderIdField').value = order.order_id || '';
+      document.getElementById('editReference').value = order.reference || '';
+      document.getElementById('editCost').value = order.cost_price || 0;
+      document.getElementById('editSale').value = order.sale_price || 0;
+      document.getElementById('editExpense').value = order.order_expense || 0;
+      document.getElementById('editDeliveryExpense').value = order.delivery_expense || 0;
+      document.getElementById('editDate').value = order.order_date || '';
 
-  document.getElementById('editModal').style.display = 'flex';
-}
+      document.getElementById('editModal').style.display = 'flex';
+    }
 
-function closeEditModal() {
-  document.getElementById('editModal').style.display = 'none';
-}
+    function closeEditModal() {
+      document.getElementById('editModal').style.display = 'none';
+    }
 
-async function updateOrder() {
-  const id = document.getElementById('editId').value;
-  const customer = document.getElementById('editCustomer').value;
-  const order_id = document.getElementById('editOrderIdField').value;
-  const reference = document.getElementById('editReference').value;
-  const cost_price = parseFloat(document.getElementById('editCost').value) || 0;
-  const sale_price = parseFloat(document.getElementById('editSale').value) || 0;
-  const order_expense = parseFloat(document.getElementById('editExpense').value) || 0;
-  const order_date = document.getElementById('editDate').value;
+    async function updateOrder() {
+      const id = document.getElementById('editId').value;
+      const customer = document.getElementById('editCustomer').value;
+      const order_id = document.getElementById('editOrderIdField').value;
+      const reference = document.getElementById('editReference').value;
+      const cost_price = parseFloat(document.getElementById('editCost').value) || 0;
+      const sale_price = parseFloat(document.getElementById('editSale').value) || 0;
+      const order_expense = parseFloat(document.getElementById('editExpense').value) || 0;
+      const delivery_expense = parseFloat(document.getElementById('editDeliveryExpense').value) || 0;
+      const order_date = document.getElementById('editDate').value;
 
-  if (!customer || !order_id || !order_date) {
-    alert("Please enter at least Customer Name, Order ID and Date");
-    return;
-  }
+      if (!customer || !order_id || !order_date) {
+        alert("Please enter at least Customer Name, Order ID and Date");
+        return;
+      }
 
-  const { error } = await client
-    .from('orders')
-    .update({
-      customer_name: customer,
-      order_id: order_id,
-      reference: reference,
-      cost_price: cost_price,
-      sale_price: sale_price,
-      order_expense: order_expense,
-      order_date: order_date
-    })
-    .eq('id', id);
+      const { error } = await client
+        .from('orders')
+        .update({
+          customer_name: customer,
+          order_id: order_id,
+          reference: reference,
+          cost_price: cost_price,
+          sale_price: sale_price,
+          order_expense: order_expense,
+          delivery_expense: delivery_expense,
+          order_date: order_date
+        })
+        .eq('id', id);
 
-  if (error) {
-    alert("Error updating order: " + error.message);
-  } else {
-    closeEditModal();
-    renderOrdersTable();
-    updateOrderStats();
-  }
-}
-
+      if (error) {
+        alert("Error updating order: " + error.message);
+      } else {
+        closeEditModal();
+        renderOrdersTable();
+        updateOrderStats();
+      }
+    }
 
     async function renderOrdersTable() {
       let tbody = document.getElementById("ordersTable");
-      tbody.innerHTML = "<tr><td colspan='9' style='text-align: center; padding: 20px;'>Loading orders...</td></tr>";
+      tbody.innerHTML = "<tr><td colspan='10' style='text-align: center; padding: 20px;'>Loading orders...</td></tr>";
 
       const { data: orders, error } = await client.from("orders").select("*").order("order_date", { ascending: false });
 
       if (error) {
-        tbody.innerHTML = "<tr><td colspan='9' style='text-align: center; padding: 20px; color: var(--danger);'>Error loading orders: " + error.message + "</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='10' style='text-align: center; padding: 20px; color: var(--danger);'>Error loading orders: " + error.message + "</td></tr>";
         return;
       }
 
       if (orders.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='9' style='text-align: center; padding: 20px;'>No orders found. Add your first order above.</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='10' style='text-align: center; padding: 20px;'>No orders found. Add your first order above.</td></tr>";
         return;
       }
 
@@ -1013,12 +1117,12 @@ async function updateOrder() {
       const tbody = document.getElementById("ordersTable");
       
       if (orders.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='9' style='text-align: center; padding: 20px;'>No orders match your filters.</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='10' style='text-align: center; padding: 20px;'>No orders match your filters.</td></tr>";
         return;
       }
       
       tbody.innerHTML = orders.map(order => {
-        const profit = (order.sale_price || 0) - (order.cost_price || 0) - (order.order_expense || 0);
+        const profit = (order.sale_price || 0) - (order.cost_price || 0) - (order.order_expense || 0) - (order.delivery_expense || 0);
         const profitClass = profit >= 0 ? "profit-positive" : "profit-negative";
         
         return `
@@ -1026,10 +1130,11 @@ async function updateOrder() {
             <td>${order.customer_name || "-"}</td>
             <td>${order.order_id || "-"}</td>
             <td>${order.reference || "-"}</td>
-            <td>RS ${(order.cost_price || 0).toFixed(2)}</td>
-            <td>RS ${(order.sale_price || 0).toFixed(2)}</td>
-            <td>RS ${(order.order_expense || 0).toFixed(2)}</td>
-            <td class="${profitClass}">RS ${profit.toFixed(2)}</td>
+            <td>${formatCurrency(order.cost_price || 0)}</td>
+            <td>${formatCurrency(order.sale_price || 0)}</td>
+            <td>${formatCurrency(order.order_expense || 0)}</td>
+            <td>${formatCurrency(order.delivery_expense || 0)}</td>
+            <td class="${profitClass}">${formatCurrency(profit)}</td>
             <td>${formatDate(order.order_date)}</td>
             <td class="action-cell">
               <button onclick="openEditModal(${JSON.stringify(order).replace(/"/g, '&quot;')})" class="btn btn-warning btn-sm">
@@ -1060,22 +1165,26 @@ async function updateOrder() {
       
       let totalSales = 0;
       let totalCost = 0;
-      let totalExpense = 0;
+      let totalOrderExpense = 0;
+      let totalDeliveryExpense = 0;
       let totalProfit = 0;
       
       orders.forEach(order => {
         totalSales += order.sale_price || 0;
         totalCost += order.cost_price || 0;
-        totalExpense += order.order_expense || 0;
-        totalProfit += (order.sale_price || 0) - (order.cost_price || 0) - (order.order_expense || 0);
+        totalOrderExpense += order.order_expense || 0;
+        totalDeliveryExpense += order.delivery_expense || 0;
+        totalProfit += (order.sale_price || 0) - (order.cost_price || 0) - (order.order_expense || 0) - (order.delivery_expense || 0);
       });
       
       const avgMargin = totalSales > 0 ? ((totalProfit / totalSales) * 100) : 0;
       
-      document.getElementById("total-sales").textContent = `RS ${totalSales.toFixed(2)}`;
-      document.getElementById("total-profit").textContent = `RS ${totalProfit.toFixed(2)}`;
+      document.getElementById("total-sales").textContent = formatCurrency(totalSales);
+      document.getElementById("total-profit").textContent = formatCurrency(totalProfit);
       document.getElementById("total-orders").textContent = orders.length;
       document.getElementById("avg-margin").textContent = `${avgMargin.toFixed(2)}%`;
+      document.getElementById("total-delivery").textContent = formatCurrency(totalDeliveryExpense);
+      document.getElementById("total-order-expense").textContent = formatCurrency(totalOrderExpense);
     }
 
     // Monthly Costs Functions
@@ -1143,7 +1252,7 @@ async function updateOrder() {
         <tr>
           <td>${cost.name}</td>
           <td>${cost.category}</td>
-          <td>RS ${cost.amount.toFixed(2)}</td>
+          <td>${formatCurrency(cost.amount)}</td>
           <td>${formatMonth(cost.month)}</td>
           <td>${cost.description || "-"}</td>
           <td class="action-cell">
@@ -1200,33 +1309,36 @@ async function updateOrder() {
       let totalRevenue = 0;
       let totalOrderCosts = 0;
       let totalOrderExpenses = 0;
+      let totalDeliveryExpenses = 0;
       let totalMonthlyCosts = 0;
       
       orders.forEach(order => {
         totalRevenue += order.sale_price || 0;
         totalOrderCosts += order.cost_price || 0;
         totalOrderExpenses += order.order_expense || 0;
+        totalDeliveryExpenses += order.delivery_expense || 0;
       });
       
       monthlyCosts.forEach(cost => {
         totalMonthlyCosts += cost.amount || 0;
       });
       
-      const totalCosts = totalOrderCosts + totalMonthlyCosts + totalOrderExpenses;
+      const totalCosts = totalOrderCosts + totalMonthlyCosts + totalOrderExpenses + totalDeliveryExpenses;
       const netProfit = totalRevenue - totalCosts;
       
       // Update summary cards
-      document.getElementById("report-revenue").textContent = `RS ${totalRevenue.toFixed(2)}`;
-      document.getElementById("report-costs").textContent = `RS ${totalOrderCosts.toFixed(2)}`;
-      document.getElementById("report-expenses").textContent = `RS ${totalOrderExpenses.toFixed(2)}`;
-      document.getElementById("report-monthly-costs").textContent = `RS ${totalMonthlyCosts.toFixed(2)}`;
+      document.getElementById("report-revenue").textContent = formatCurrency(totalRevenue);
+      document.getElementById("report-costs").textContent = formatCurrency(totalOrderCosts);
+      document.getElementById("report-expenses").textContent = formatCurrency(totalOrderExpenses);
+      document.getElementById("report-delivery-expenses").textContent = formatCurrency(totalDeliveryExpenses);
+      document.getElementById("report-monthly-costs").textContent = formatCurrency(totalMonthlyCosts);
       
       const profitElement = document.getElementById("report-profit");
-      profitElement.textContent = `RS ${netProfit.toFixed(2)}`;
+      profitElement.textContent = formatCurrency(netProfit);
       profitElement.className = netProfit >= 0 ? "summary-value summary-profit" : "summary-value summary-loss";
       
       // Generate category breakdown
-      const categories = ["Rent", "Utilities", "Salaries", "Marketing", "Supplies", "Other"];
+      const categories = ["Rent", "Utilities", "Salaries", "Marketing", "Supplies", "Delivery", "Other"];
       let reportHTML = "";
       
       categories.forEach(category => {
@@ -1237,11 +1349,12 @@ async function updateOrder() {
         reportHTML += `
           <tr>
             <td>${category}</td>
-            <td>RS ${totalRevenue.toFixed(2)}</td>
-            <td>RS ${categoryMonthlyCosts.toFixed(2)}</td>
-            <td>RS ${totalOrderCosts.toFixed(2)}</td>
-            <td>RS ${totalOrderExpenses.toFixed(2)}</td>
-            <td>RS ${(totalRevenue - totalOrderCosts - totalOrderExpenses - categoryMonthlyCosts).toFixed(2)}</td>
+            <td>${formatCurrency(totalRevenue)}</td>
+            <td>${formatCurrency(categoryMonthlyCosts)}</td>
+            <td>${formatCurrency(totalOrderCosts)}</td>
+            <td>${formatCurrency(totalOrderExpenses)}</td>
+            <td>${formatCurrency(totalDeliveryExpenses)}</td>
+            <td>${formatCurrency(totalRevenue - totalOrderCosts - totalOrderExpenses - totalDeliveryExpenses - categoryMonthlyCosts)}</td>
           </tr>
         `;
       });
@@ -1250,11 +1363,12 @@ async function updateOrder() {
       reportHTML += `
         <tr style="font-weight: bold; background-color: #f8f9fa;">
           <td>TOTAL</td>
-          <td>RS ${totalRevenue.toFixed(2)}</td>
-          <td>RS ${totalMonthlyCosts.toFixed(2)}</td>
-          <td>RS ${totalOrderCosts.toFixed(2)}</td>
-          <td>RS ${totalOrderExpenses.toFixed(2)}</td>
-          <td>RS ${netProfit.toFixed(2)}</td>
+          <td>${formatCurrency(totalRevenue)}</td>
+          <td>${formatCurrency(totalMonthlyCosts)}</td>
+          <td>${formatCurrency(totalOrderCosts)}</td>
+          <td>${formatCurrency(totalOrderExpenses)}</td>
+          <td>${formatCurrency(totalDeliveryExpenses)}</td>
+          <td>${formatCurrency(netProfit)}</td>
         </tr>
       `;
       
@@ -1289,10 +1403,10 @@ async function updateOrder() {
       }
       
       // Create CSV content
-      let csvContent = "Customer Name,Order ID,Reference,Cost Price,Sale Price,Order Expense,Profit,Date\n";
+      let csvContent = "Customer Name,Order ID,Reference,Cost Price,Sale Price,Order Expense,Delivery Expense,Profit,Date\n";
       
       filteredOrders.forEach(order => {
-        const profit = (order.sale_price || 0) - (order.cost_price || 0) - (order.order_expense || 0);
+        const profit = (order.sale_price || 0) - (order.cost_price || 0) - (order.order_expense || 0) - (order.delivery_expense || 0);
         
         csvContent += `"${order.customer_name || ''}",`;
         csvContent += `"${order.order_id || ''}",`;
@@ -1300,6 +1414,7 @@ async function updateOrder() {
         csvContent += `${order.cost_price || 0},`;
         csvContent += `${order.sale_price || 0},`;
         csvContent += `${order.order_expense || 0},`;
+        csvContent += `${order.delivery_expense || 0},`;
         csvContent += `${profit},`;
         csvContent += `${order.order_date || ''}\n`;
       });
@@ -1326,12 +1441,12 @@ async function updateOrder() {
       
       // Close modal if clicked outside
       window.onclick = function(event) {
-        const modal = document.getElementById('editOrderModal');
+        const modal = document.getElementById('editModal');
         if (event.target == modal) {
           closeEditModal();
         }
       };
     });
-</script>
+  </script>
 </body>
-</html> 
+</html>
