@@ -187,6 +187,28 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
     
+    .btn-success {
+      background: #2ecc71;
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background: #27ae60;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-warning {
+      background: var(--warning);
+      color: white;
+    }
+    
+    .btn-warning:hover {
+      background: #e67e22;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
     .btn-sm {
       padding: 8px 16px;
       font-size: 14px;
@@ -276,7 +298,25 @@
       box-shadow: var(--card-shadow);
       display: flex;
       flex-direction: column;
+      position: relative;
+      overflow: hidden;
     }
+    
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+    }
+    
+    .stat-card:nth-child(1)::before { background: var(--primary); }
+    .stat-card:nth-child(2)::before { background: #2ecc71; }
+    .stat-card:nth-child(3)::before { background: var(--warning); }
+    .stat-card:nth-child(4)::before { background: #9b59b6; }
+    .stat-card:nth-child(5)::before { background: var(--danger); }
+    .stat-card:nth-child(6)::before { background: #3498db; }
     
     .stat-title {
       font-size: 16px;
@@ -394,7 +434,25 @@
       border-radius: 12px;
       box-shadow: var(--card-shadow);
       text-align: center;
+      position: relative;
+      overflow: hidden;
     }
+    
+    .summary-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+    }
+    
+    .summary-card:nth-child(1)::before { background: var(--primary); }
+    .summary-card:nth-child(2)::before { background: var(--danger); }
+    .summary-card:nth-child(3)::before { background: var(--warning); }
+    .summary-card:nth-child(4)::before { background: #3498db; }
+    .summary-card:nth-child(5)::before { background: #9b59b6; }
+    .summary-card:nth-child(6)::before { background: #2ecc71; }
     
     .summary-title {
       font-size: 14px;
@@ -433,6 +491,65 @@
     .filter-group label {
       margin-bottom: 5px;
       font-weight: 500;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .modal-content {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      width: 500px;
+      max-width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--light-gray);
+    }
+    
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--dark);
+    }
+    
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--gray);
+    }
+    
+    .total-cost-badge {
+      background: linear-gradient(120deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 15px;
     }
     
     @media (max-width: 992px) {
@@ -565,12 +682,12 @@
         
         <div class="stat-card">
           <div class="stat-title">
-            <i class="fas fa-receipt"></i>
-            Total Order Expense
+            <i class="fas fa-money-bill-wave"></i>
+            Total Cost
           </div>
-          <div class="stat-value" id="total-order-expense">RS 0</div>
+          <div class="stat-value" id="total-cost">RS 0</div>
           <div class="stat-icon expense-icon">
-            <i class="fas fa-receipt"></i>
+            <i class="fas fa-money-bill-wave"></i>
           </div>
         </div>
       </div>
@@ -686,6 +803,13 @@
             </tbody>
           </table>
         </div>
+        
+        <div style="margin-top: 20px; text-align: right;">
+          <div class="total-cost-badge">
+            <i class="fas fa-calculator"></i>
+            Total Cost: <span id="table-total-cost">RS 0</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -774,6 +898,13 @@
             </tbody>
           </table>
         </div>
+        
+        <div style="margin-top: 20px; text-align: right;">
+          <div class="total-cost-badge">
+            <i class="fas fa-calculator"></i>
+            Total Monthly Costs: <span id="monthly-total-cost">RS 0</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -854,38 +985,49 @@
     </div>
   </div>
   
-  <div id="editModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
-  background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index: 1000;">
-    <div style="background:#fff; padding:20px; border-radius:10px; width:400px; max-width: 90%; position:relative;">
-      <h5 style="margin-bottom: 15px; font-size: 18px;">Edit Order</h5>
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit Order</h3>
+        <button class="close-modal" onclick="closeEditModal()">&times;</button>
+      </div>
+      
       <input type="hidden" id="editId">
       <div class="form-group">
+        <label for="editCustomer">Customer Name</label>
         <input type="text" id="editCustomer" class="form-control" placeholder="Customer Name">
       </div>
       <div class="form-group">
+        <label for="editOrderIdField">Order ID</label>
         <input type="text" id="editOrderIdField" class="form-control" placeholder="Order ID">
       </div>
       <div class="form-group">
+        <label for="editReference">Reference</label>
         <input type="text" id="editReference" class="form-control" placeholder="Reference">
       </div>
       <div class="form-group">
+        <label for="editCost">Cost Price</label>
         <input type="number" id="editCost" class="form-control" placeholder="Cost Price">
       </div>
       <div class="form-group">
+        <label for="editSale">Sale Price</label>
         <input type="number" id="editSale" class="form-control" placeholder="Sale Price">
       </div>
       <div class="form-group">
+        <label for="editExpense">Order Expense</label>
         <input type="number" id="editExpense" class="form-control" placeholder="Order Expense">
       </div>
       <div class="form-group">
+        <label for="editDeliveryExpense">Delivery Expense</label>
         <input type="number" id="editDeliveryExpense" class="form-control" placeholder="Delivery Expense">
       </div>
       <div class="form-group">
+        <label for="editDate">Order Date</label>
         <input type="date" id="editDate" class="form-control">
       </div>
-      <div style="text-align:right; margin-top:10px;">
-        <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
-        <button class="btn btn-success" onclick="updateOrder()">Save</button>
+      <div style="text-align:right; margin-top:20px;">
+        <button class="btn btn-warning" onclick="closeEditModal()">Cancel</button>
+        <button class="btn btn-success" onclick="updateOrder()">Save Changes</button>
       </div>
     </div>
   </div>
@@ -1121,9 +1263,16 @@
         return;
       }
       
+      // Calculate total cost for the table
+      let tableTotalCost = 0;
+      
       tbody.innerHTML = orders.map(order => {
         const profit = (order.sale_price || 0) - (order.cost_price || 0) - (order.order_expense || 0) - (order.delivery_expense || 0);
         const profitClass = profit >= 0 ? "profit-positive" : "profit-negative";
+        
+        // Add to total cost
+        const orderTotalCost = (order.cost_price || 0) + (order.order_expense || 0) + (order.delivery_expense || 0);
+        tableTotalCost += orderTotalCost;
         
         return `
           <tr>
@@ -1147,6 +1296,9 @@
           </tr>
         `;
       }).join("");
+      
+      // Update the total cost badge
+      document.getElementById("table-total-cost").textContent = formatCurrency(tableTotalCost);
     }
 
     function formatDate(dateString) {
@@ -1177,6 +1329,7 @@
         totalProfit += (order.sale_price || 0) - (order.cost_price || 0) - (order.order_expense || 0) - (order.delivery_expense || 0);
       });
       
+      const totalOverallCost = totalCost + totalOrderExpense + totalDeliveryExpense;
       const avgMargin = totalSales > 0 ? ((totalProfit / totalSales) * 100) : 0;
       
       document.getElementById("total-sales").textContent = formatCurrency(totalSales);
@@ -1184,7 +1337,7 @@
       document.getElementById("total-orders").textContent = orders.length;
       document.getElementById("avg-margin").textContent = `${avgMargin.toFixed(2)}%`;
       document.getElementById("total-delivery").textContent = formatCurrency(totalDeliveryExpense);
-      document.getElementById("total-order-expense").textContent = formatCurrency(totalOrderExpense);
+      document.getElementById("total-cost").textContent = formatCurrency(totalOverallCost);
     }
 
     // Monthly Costs Functions
@@ -1248,20 +1401,30 @@
         return;
       }
       
-      tbody.innerHTML = costs.map(cost => `
-        <tr>
-          <td>${cost.name}</td>
-          <td>${cost.category}</td>
-          <td>${formatCurrency(cost.amount)}</td>
-          <td>${formatMonth(cost.month)}</td>
-          <td>${cost.description || "-"}</td>
-          <td class="action-cell">
-            <button onclick="deleteMonthlyCost(${cost.id})" class="btn btn-danger btn-sm">
-              <i class="fas fa-trash"></i>
-            </button>
-          </td>
-        </tr>
-      `).join("");
+      // Calculate total monthly costs
+      let totalMonthlyCosts = 0;
+      
+      tbody.innerHTML = costs.map(cost => {
+        totalMonthlyCosts += cost.amount || 0;
+        
+        return `
+          <tr>
+            <td>${cost.name}</td>
+            <td>${cost.category}</td>
+            <td>${formatCurrency(cost.amount)}</td>
+            <td>${formatMonth(cost.month)}</td>
+            <td>${cost.description || "-"}</td>
+            <td class="action-cell">
+              <button onclick="deleteMonthlyCost(${cost.id})" class="btn btn-danger btn-sm">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+      
+      // Update the total monthly costs badge
+      document.getElementById("monthly-total-cost").textContent = formatCurrency(totalMonthlyCosts);
     }
 
     function formatMonth(monthString) {
