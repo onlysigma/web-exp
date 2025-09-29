@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Monthly Cost Management System</title>
+  <title>Business Manager Pro</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
       --primary: #4361ee;
+      --primary-light: #4895ef;
       --secondary: #3f37c9;
       --success: #4cc9f0;
       --danger: #f72585;
@@ -19,6 +20,7 @@
       --light-gray: #e9ecef;
       --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       --transition: all 0.3s ease;
+      --border-radius: 12px;
     }
     
     * {
@@ -47,6 +49,9 @@
       color: white;
       padding: 20px 0;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
     
     .header-content {
@@ -70,17 +75,26 @@
       font-size: 28px;
     }
     
-    nav a {
-      color: white;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 4px;
-      transition: var(--transition);
-      font-weight: 500;
+    nav {
+      display: flex;
+      gap: 10px;
     }
     
-    nav a:hover {
-      background: rgba(255, 255, 255, 0.15);
+    .nav-btn {
+      color: white;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      transition: var(--transition);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .nav-btn:hover, .nav-btn.active {
+      background: rgba(255, 255, 255, 0.2);
     }
     
     .page-title {
@@ -99,10 +113,15 @@
     
     .card {
       background: white;
-      border-radius: 12px;
+      border-radius: var(--border-radius);
       box-shadow: var(--card-shadow);
       padding: 24px;
       margin-bottom: 30px;
+      transition: var(--transition);
+    }
+    
+    .card:hover {
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
     }
     
     .card-title {
@@ -113,6 +132,8 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--light-gray);
     }
     
     .card-title i {
@@ -222,7 +243,7 @@
     
     .table-container {
       overflow-x: auto;
-      border-radius: 12px;
+      border-radius: var(--border-radius);
       box-shadow: var(--card-shadow);
     }
     
@@ -230,7 +251,7 @@
       width: 100%;
       border-collapse: collapse;
       background: white;
-      border-radius: 12px;
+      border-radius: var(--border-radius);
       overflow: hidden;
     }
     
@@ -293,13 +314,19 @@
     
     .stat-card {
       background: white;
-      border-radius: 12px;
+      border-radius: var(--border-radius);
       padding: 20px;
       box-shadow: var(--card-shadow);
       display: flex;
       flex-direction: column;
       position: relative;
       overflow: hidden;
+      transition: var(--transition);
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
     }
     
     .stat-card::before {
@@ -376,7 +403,7 @@
       display: flex;
       margin-bottom: 20px;
       background: white;
-      border-radius: 12px;
+      border-radius: var(--border-radius);
       overflow: hidden;
       box-shadow: var(--card-shadow);
     }
@@ -388,11 +415,13 @@
       transition: var(--transition);
       text-align: center;
       flex: 1;
+      border-bottom: 3px solid transparent;
     }
     
     .tab.active {
       background: var(--primary);
       color: white;
+      border-bottom: 3px solid var(--secondary);
     }
     
     .tab:hover:not(.active) {
@@ -431,11 +460,17 @@
     .summary-card {
       background: white;
       padding: 20px;
-      border-radius: 12px;
+      border-radius: var(--border-radius);
       box-shadow: var(--card-shadow);
       text-align: center;
       position: relative;
       overflow: hidden;
+      transition: var(--transition);
+    }
+    
+    .summary-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
     }
     
     .summary-card::before {
@@ -509,7 +544,7 @@
     .modal-content {
       background: #fff;
       padding: 30px;
-      border-radius: 12px;
+      border-radius: var(--border-radius);
       width: 500px;
       max-width: 90%;
       max-height: 90vh;
@@ -568,6 +603,11 @@
         gap: 15px;
       }
       
+      nav {
+        width: 100%;
+        justify-content: center;
+      }
+      
       .form-grid {
         grid-template-columns: 1fr;
       }
@@ -603,9 +643,14 @@
         <span>Business Manager Pro</span>
       </div>
       <nav>
-        <a href="#" class="nav-link" data-target="orders-section"><i class="fas fa-file-invoice-dollar"></i> Orders</a>
-        <a href="#" class="nav-link" data-target="monthly-section"><i class="fas fa-money-bill"></i> Monthly Costs</a>
-        <a href="#" class="nav-link" data-target="reports-section"><i class="fas fa-chart-pie"></i> Reports</a>
+        <a href="#" class="nav-btn active" data-target="orders-section">
+          <i class="fas fa-file-invoice-dollar"></i> 
+          <span>Orders Management</span>
+        </a>
+        <a href="#" class="nav-btn" data-target="monthly-section">
+          <i class="fas fa-money-bill"></i> 
+          <span>Monthly Costs</span>
+        </a>
       </nav>
     </div>
   </header>
@@ -613,14 +658,8 @@
   <div class="container">
     <h1 class="page-title">
       <i class="fas fa-calculator"></i>
-      Business Management System
+      Business Management Dashboard
     </h1>
-
-    <div class="tabs">
-      <div class="tab active" data-target="orders-section">Orders Management</div>
-      <div class="tab" data-target="monthly-section">Monthly Costs</div>
-      <div class="tab" data-target="reports-section">Financial Reports</div>
-    </div>
 
     <!-- Orders Section -->
     <div id="orders-section" class="content-section active">
@@ -837,6 +876,7 @@
               <option value="Marketing">Marketing</option>
               <option value="Supplies">Supplies</option>
               <option value="Delivery">Delivery</option>
+              <option value="Ads">Ads</option>
               <option value="Other">Other</option>
             </select>
           </div>
@@ -879,7 +919,6 @@
             Filter
           </button>
         </div>
-       
 
         <div class="table-container">
           <table>
@@ -903,82 +942,6 @@
           <div class="total-cost-badge">
             <i class="fas fa-calculator"></i>
             Total Monthly Costs: <span id="monthly-total-cost">RS 0</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Reports Section -->
-    <div id="reports-section" class="content-section">
-      <div class="card">
-        <h2 class="card-title">
-          <i class="fas fa-chart-pie"></i>
-          Financial Reports
-        </h2>
-        
-        <div class="month-selector">
-          <label for="reportMonth">Select Month:</label>
-          <input type="month" id="reportMonth" class="form-control" style="width: auto;">
-          <button onclick="generateReport()" class="btn btn-primary">
-            <i class="fas fa-chart-bar"></i>
-            Generate Report
-          </button>
-        </div>
-        
-        <div class="monthly-summary">
-          <div class="summary-card">
-            <div class="summary-title">Total Revenue</div>
-            <div class="summary-value" id="report-revenue">RS 0</div>
-          </div>
-          
-          <div class="summary-card">
-            <div class="summary-title">Total Costs</div>
-            <div class="summary-value" id="report-costs">RS 0</div>
-          </div>
-          
-          <div class="summary-card">
-            <div class="summary-title">Total Order Expenses</div>
-            <div class="summary-value" id="report-expenses">RS 0</div>
-          </div>
-          
-          <div class="summary-card">
-            <div class="summary-title">Total Delivery Expenses</div>
-            <div class="summary-value" id="report-delivery-expenses">RS 0</div>
-          </div>
-          
-          <div class="summary-card">
-            <div class="summary-title">Total Monthly Costs</div>
-            <div class="summary-value" id="report-monthly-costs">RS 0</div>
-          </div>
-          
-          <div class="summary-card">
-            <div class="summary-title">Net Profit/Loss</div>
-            <div class="summary-value" id="report-profit">RS 0</div>
-          </div>
-        </div>
-        
-        <div class="card">
-          <h3 class="card-title">
-            <i class="fas fa-table"></i>
-            Detailed Report
-          </h3>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Category</th>
-                  <th>Orders Revenue</th>
-                  <th>Monthly Costs</th>
-                  <th>Order Costs</th>
-                  <th>Order Expenses</th>
-                  <th>Delivery Expenses</th>
-                  <th>Net Amount</th>
-                </tr>
-              </thead>
-              <tbody id="reportTable">
-                <!-- Report data will be inserted here -->
-              </tbody>
-            </table>
           </div>
         </div>
       </div>
@@ -1047,7 +1010,6 @@
     const currentDate = now.toISOString().slice(0, 10);
     document.getElementById('costMonth').value = currentMonth;
     document.getElementById('viewMonth').value = currentMonth;
-    document.getElementById('reportMonth').value = currentMonth;
     document.getElementById('orderDate').value = currentDate;
     
     // Format currency function
@@ -1059,13 +1021,13 @@
     }
     
     // Tab navigation
-    document.querySelectorAll('.tab, .nav-link').forEach(item => {
+    document.querySelectorAll('.nav-btn').forEach(item => {
       item.addEventListener('click', function() {
         const target = this.getAttribute('data-target');
         
-        // Update tabs
-        document.querySelectorAll('.tab').forEach(tab => {
-          tab.classList.remove('active');
+        // Update nav buttons
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+          btn.classList.remove('active');
         });
         this.classList.add('active');
         
@@ -1078,8 +1040,6 @@
         // Load data for the active section
         if (target === 'monthly-section') {
           loadMonthlyCosts();
-        } else if (target === 'reports-section') {
-          generateReport();
         }
       });
     });
@@ -1431,111 +1391,6 @@
       if (!monthString) return "-";
       const date = new Date(monthString + "-01");
       return date.toLocaleDateString("en-US", { year: "numeric", month: "long" });
-    }
-
-    // Reports Functions
-    async function generateReport() {
-      const reportMonth = document.getElementById("reportMonth").value;
-      
-      if (!reportMonth) {
-        alert("Please select a month for the report");
-        return;
-      }
-      
-      // Get orders for the selected month
-      const startDate = reportMonth + "-01";
-      const endDate = new Date(new Date(startDate).getFullYear(), new Date(startDate).getMonth() + 1, 0).toISOString().slice(0, 10);
-      
-      const { data: orders, error: ordersError } = await client
-        .from("orders")
-        .select("*")
-        .gte("order_date", startDate)
-        .lte("order_date", endDate);
-      
-      if (ordersError) {
-        alert("Error loading orders: " + ordersError.message);
-        return;
-      }
-      
-      // Get monthly costs for the selected month
-      const { data: monthlyCosts, error: costsError } = await client
-        .from("monthly_costs")
-        .select("*")
-        .eq("month", reportMonth);
-      
-      if (costsError) {
-        alert("Error loading monthly costs: " + costsError.message);
-        return;
-      }
-      
-      // Calculate totals
-      let totalRevenue = 0;
-      let totalOrderCosts = 0;
-      let totalOrderExpenses = 0;
-      let totalDeliveryExpenses = 0;
-      let totalMonthlyCosts = 0;
-      
-      orders.forEach(order => {
-        totalRevenue += order.sale_price || 0;
-        totalOrderCosts += order.cost_price || 0;
-        totalOrderExpenses += order.order_expense || 0;
-        totalDeliveryExpenses += order.delivery_expense || 0;
-      });
-      
-      monthlyCosts.forEach(cost => {
-        totalMonthlyCosts += cost.amount || 0;
-      });
-      
-      const totalCosts = totalOrderCosts + totalMonthlyCosts + totalOrderExpenses + totalDeliveryExpenses;
-      const netProfit = totalRevenue - totalCosts;
-      
-      // Update summary cards
-      document.getElementById("report-revenue").textContent = formatCurrency(totalRevenue);
-      document.getElementById("report-costs").textContent = formatCurrency(totalOrderCosts);
-      document.getElementById("report-expenses").textContent = formatCurrency(totalOrderExpenses);
-      document.getElementById("report-delivery-expenses").textContent = formatCurrency(totalDeliveryExpenses);
-      document.getElementById("report-monthly-costs").textContent = formatCurrency(totalMonthlyCosts);
-      
-      const profitElement = document.getElementById("report-profit");
-      profitElement.textContent = formatCurrency(netProfit);
-      profitElement.className = netProfit >= 0 ? "summary-value summary-profit" : "summary-value summary-loss";
-      
-      // Generate category breakdown
-      const categories = ["Rent", "Utilities", "Salaries", "Marketing", "Supplies", "Delivery", "Other"];
-      let reportHTML = "";
-      
-      categories.forEach(category => {
-        const categoryMonthlyCosts = monthlyCosts
-          .filter(cost => cost.category === category)
-          .reduce((sum, cost) => sum + (cost.amount || 0), 0);
-        
-        reportHTML += `
-          <tr>
-            <td>${category}</td>
-            <td>${formatCurrency(totalRevenue)}</td>
-            <td>${formatCurrency(categoryMonthlyCosts)}</td>
-            <td>${formatCurrency(totalOrderCosts)}</td>
-            <td>${formatCurrency(totalOrderExpenses)}</td>
-            <td>${formatCurrency(totalDeliveryExpenses)}</td>
-            <td>${formatCurrency(totalRevenue - totalOrderCosts - totalOrderExpenses - totalDeliveryExpenses - categoryMonthlyCosts)}</td>
-          </tr>
-        `;
-      });
-      
-      // Add total row
-      reportHTML += `
-        <tr style="font-weight: bold; background-color: #f8f9fa;">
-          <td>TOTAL</td>
-          <td>${formatCurrency(totalRevenue)}</td>
-          <td>${formatCurrency(totalMonthlyCosts)}</td>
-          <td>${formatCurrency(totalOrderCosts)}</td>
-          <td>${formatCurrency(totalOrderExpenses)}</td>
-          <td>${formatCurrency(totalDeliveryExpenses)}</td>
-          <td>${formatCurrency(netProfit)}</td>
-        </tr>
-      `;
-      
-      document.getElementById("reportTable").innerHTML = reportHTML;
     }
 
     // CSV Download Function
