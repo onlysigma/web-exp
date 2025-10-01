@@ -1542,34 +1542,37 @@
 
     // Monthly Costs Functions
     async function addMonthlyCost() {
-      const name = document.getElementById("costName").value;
-      const category = document.getElementById("costCategory").value;
-      const amount = parseFloat(document.getElementById("costAmount").value) || 0;
-      const month = document.getElementById("costMonth").value;
-      const description = document.getElementById("costDescription").value;
+  const name = document.getElementById("costName").value;
+  const category = document.getElementById("costCategory").value;
+  const amount = parseFloat(document.getElementById("costAmount").value) || 0;
+  const month = document.getElementById("costMonth").value;
+  const description = document.getElementById("costDescription").value;
 
-      if (!name || !category || !month) {
-        alert("Please enter Cost Name, Category, and Month");
-        return;
-      }
+  if (!name || !category || !month) {
+    alert("Please enter Cost Name, Category, and Month");
+    return;
+  }
 
-      const { data, error } = await client.from("monthly_costs").insert([
-        { name, category, amount, month, description }
-      ]);
+  // Ensure month is stored correctly (YYYY-MM format)
+  const formattedMonth = month;
 
-      if (error) {
-        alert("Error adding monthly cost: " + error.message);
-      } else {
-        // Clear form
-        document.getElementById("costName").value = "";
-        document.getElementById("costCategory").value = "";
-        document.getElementById("costAmount").value = "";
-        document.getElementById("costMonth").value = currentMonth;
-        document.getElementById("costDescription").value = "";
-        
-        loadMonthlyCosts();
-      }
-    }
+  const { data, error } = await client.from("monthly_costs").insert([
+    { name, category, amount, month: formattedMonth, description }
+  ]);
+
+  if (error) {
+    alert("Error adding monthly cost: " + error.message);
+  } else {
+    // Clear form
+    document.getElementById("costName").value = "";
+    document.getElementById("costCategory").value = "";
+    document.getElementById("costAmount").value = "";
+    document.getElementById("costMonth").value = currentMonth;
+    document.getElementById("costDescription").value = "";
+    
+    loadMonthlyCosts();
+  }
+}
 
     async function deleteMonthlyCost(id) {
       if (confirm("Are you sure you want to delete this monthly cost?")) {
@@ -1580,59 +1583,67 @@
     }
 
     async function loadMonthlyCosts() {
-      const monthFilter = document.getElementById("viewMonth").value;
-      let query = client.from("monthly_costs").select("*");
-      
-      if (monthFilter) {
-        query = query.eq("month", monthFilter);
-      }
-      
-      const { data: costs, error } = await query.order("month", { ascending: false });
-      
-      const tbody = document.getElementById("monthlyCostsTable");
-      
-      if (error) {
-        tbody.innerHTML = "<tr><td colspan='6' style='text-align: center; padding: 20px; color: var(--danger);'>Error loading costs: " + error.message + "</td></tr>";
-        return;
-      }
-      
-      if (costs.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='6' style='text-align: center; padding: 20px;'>No monthly costs found for the selected month.</td></tr>";
-        return;
-      }
-      
-      // Calculate total monthly costs
-      let totalMonthlyCosts = 0;
-      
-      tbody.innerHTML = costs.map(cost => {
-        totalMonthlyCosts += cost.amount || 0;
-        
-        return `
-          <tr>
-            <td>${cost.name}</td>
-            <td>${cost.category}</td>
-            <td>${formatCurrency(cost.amount)}</td>
-            <td>${formatMonth(cost.month)}</td>
-            <td>${cost.description || "-"}</td>
-            <td class="action-cell">
-              <button onclick="deleteMonthlyCost(${cost.id})" class="btn btn-danger btn-sm">
-                <i class="fas fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-        `;
-      }).join("");
-      
-      // Update the total monthly costs badge
-      document.getElementById("monthly-total-cost").textContent = formatCurrency(totalMonthlyCosts);
-    }
+  const monthFilter = document.getElementById("viewMonth").value;
+  let query = client.from("monthly_costs").select("*");
+  
+  if (monthFilter) {
+    query = query.eq("month", monthFilter);
+  }
+  
+  const { data: costs, error } = await query.order("month", { ascending: false });
+  
+  const tbody = document.getElementById("monthlyCostsTable");
+  
+  if (error) {
+    tbody.innerHTML = "<tr><td colspan='6' style='text-align: center; padding: 20px; color: var(--danger);'>Error loading costs: " + error.message + "</td></tr>";
+    return;
+  }
+  
+  if (costs.length === 0) {
+    tbody.innerHTML = "<tr><td colspan='6' style='text-align: center; padding: 20px;'>No monthly costs found for the selected month.</td></tr>";
+    return;
+  }
+  
+  // Calculate total monthly costs
+  let totalMonthlyCosts = 0;
+  
+  tbody.innerHTML = costs.map(cost => {
+    totalMonthlyCosts += cost.amount || 0;
+    
+    return `
+      <tr>
+        <td>${cost.name}</td>
+        <td>${cost.category}</td>
+        <td>${formatCurrency(cost.amount)}</td>
+        <td>${formatMonth(cost.month)}</td>
+        <td>${cost.description || "-"}</td>
+        <td class="action-cell">
+          <button onclick="deleteMonthlyCost(${cost.id})" class="btn btn-danger btn-sm">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join("");
+  
+  // Update the total monthly costs badge
+  document.getElementById("monthly-total-cost").textContent = formatCurrency(totalMonthlyCosts);
+}
 
-    function formatMonth(monthString) {
-      if (!monthString) return "-";
-      const date = new Date(monthString + "-01");
-      return date.toLocaleDateString("en-US", { year: "numeric", month: "long" });
-    }
-
+ function formatMonth(monthString) {
+  if (!monthString) return "-";
+  
+  // Fix for timezone issue - ensure we're using the correct month
+  // Parse the month string as UTC to avoid timezone shifting
+  const [year, month] = monthString.split('-');
+  const date = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, 1));
+  
+  return date.toLocaleDateString("en-US", { 
+    year: "numeric", 
+    month: "long",
+    timeZone: 'UTC' // Ensure consistent formatting
+  });
+}
     // Monthly Analytics Functions
     async function loadMonthlyAnalytics() {
       const monthFilter = document.getElementById("analyticsMonth").value;
